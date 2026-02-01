@@ -571,7 +571,7 @@ Type @ and start typing for suggestions (e.g., @airtel, @reliance)"></textarea>
             const text = e.target.value;
             const cursorPos = e.target.selectionStart;
             const textBeforeCursor = text.substring(0, cursorPos);
-            const atMatch = textBeforeCursor.match(/@(\w*)$/);
+            const atMatch = textBeforeCursor.match(/@([\w.]*)$/);
 
             if (atMatch) {
                 showSearchResults(atMatch[1]);
@@ -619,27 +619,41 @@ Type @ and start typing for suggestions (e.g., @airtel, @reliance)"></textarea>
                 (s.alias && s.alias.toLowerCase().includes(q))
             );
 
-            if (matches.length === 0) {
-                popup.innerHTML = '<div class="search-loading">No matches found. Try: aapl, reliance, tcs</div>';
-            } else {
-                popup.innerHTML = matches.slice(0, 8).map((s, i) => `
-            <div class="search-item ${i === 0 ? 'selected' : ''}" data-ticker="${s.alias || s.ticker}">
-                <div>
-                    <span class="search-ticker">${s.ticker}</span>
-                    <span class="search-name">${s.name}</span>
-                </div>
-                <span style="color: #38ef7d;">${getCurrencySymbol(s.currency)}${s.price.toLocaleString()}</span>
-            </div>
-        `).join('');
+            let html = '';
 
-                popup.querySelectorAll('.search-item').forEach(item => {
-                    item.addEventListener('click', () => selectStock(item.dataset.ticker));
-                });
+            if (q.length >= 1) {
+                const customTicker = q.toUpperCase();
+                html += `<div class="search-item selected" data-ticker="${customTicker}" data-custom="true">
+                    <div>
+                        <span class="search-ticker">${customTicker}</span>
+                        <span class="search-name">Add any stock ticker</span>
+                    </div>
+                    <span style="color: var(--text-muted);">Press Enter ↵</span>
+                </div>`;
             }
+
+            html += matches.slice(0, 7).map((s, i) => `
+                <div class="search-item" data-ticker="${s.alias || s.ticker}">
+                    <div>
+                        <span class="search-ticker">${s.ticker}</span>
+                        <span class="search-name">${s.name}</span>
+                    </div>
+                    <span style="color: #38ef7d;">${getCurrencySymbol(s.currency)}${s.price.toLocaleString()}</span>
+                </div>
+            `).join('');
+
+            if (!html) {
+                html = '<div class="search-loading">Type a stock ticker (e.g., AAPL, TSLA, RELIANCE.NS)</div>';
+            }
+
+            popup.innerHTML = html;
+            popup.querySelectorAll('.search-item[data-ticker]').forEach(item => {
+                item.addEventListener('click', () => selectStock(item.dataset.ticker, item.dataset.custom === 'true'));
+            });
             popup.classList.add('active');
         }
 
-        function selectStock(ticker) {
+        function selectStock(ticker, isCustom = false) {
             hideSearchPopup();
 
             const input = document.getElementById('mainInput');
@@ -647,7 +661,7 @@ Type @ and start typing for suggestions (e.g., @airtel, @reliance)"></textarea>
             const cursorPos = input.selectionStart;
             const beforeCursor = text.substring(0, cursorPos);
             const afterCursor = text.substring(cursorPos);
-            const newBefore = beforeCursor.replace(/@\w*$/, '');
+            const newBefore = beforeCursor.replace(/@[\w.]*$/, '');
 
             input.value = newBefore + '[' + ticker + '] ' + afterCursor;
             const newCursorPos = newBefore.length + ticker.length + 3;
@@ -665,9 +679,18 @@ Type @ and start typing for suggestions (e.g., @airtel, @reliance)"></textarea>
                     currency: stockData.currency,
                     quantity: 1
                 });
-                renderChips();
-                updateTotal();
+            } else {
+                const currency = ticker.endsWith('.NS') || ticker.endsWith('.BO') ? 'INR' : 'USD';
+                portfolio.push({
+                    ticker: ticker,
+                    name: ticker,
+                    price: 0,
+                    currency: currency,
+                    quantity: 1
+                });
             }
+            renderChips();
+            updateTotal();
         }
 
         function hideSearchPopup() {
