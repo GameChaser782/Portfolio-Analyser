@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Analyzer</title>
+    <meta name="description" content="AI-Powered Investment Portfolio Analysis">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Portfolio Analyzer</h1>
+            <div class="subtitle">AI-Powered Investment Insights</div>
+        </header>
+
+        <div class="card">
+            <div class="api-key-section">
+                <input type="password" id="apiKeyInput" class="api-key-input" placeholder="Enter your Gemini API Key">
+                <div id="apiStatus" class="api-status disconnected">○ Enter API Key</div>
+            </div>
+
+            <div class="input-container">
+                <textarea id="mainInput" class="main-input" placeholder="Enter your analysis request. Use @TICKER to add stocks.
+
+Example: Analyze my portfolio for growth. @AAPL @MSFT
+
+Type @ and start typing for suggestions (e.g., @airtel, @maruti)"></textarea>
+                <div id="searchPopup" class="search-popup"></div>
+            </div>
+            <div class="hint">Type @ for stock suggestions • Arrow keys to navigate • Enter to select</div>
+
+            <div class="portfolio-summary">
+                <div>
+                    <div class="portfolio-label">Portfolio Value</div>
+                    <div id="portfolioTotal" class="portfolio-total">$0.00</div>
+                </div>
+                <div class="portfolio-label" id="stockCount">0 stocks</div>
+            </div>
+
+            <div id="stockChips" class="stock-chips"></div>
+
+            <div class="btn-group">
+                <button id="analyzeBtn" class="analyze-btn">Analyze Portfolio</button>
+                <button id="clearBtn" class="clear-btn">Clear</button>
+            </div>
+        </div>
+
+        <div id="loader" class="loader">
+            <div class="spinner"></div>
+        </div>
+
+        <div id="resultCard" class="card result-card">
+            <div class="score-label">Portfolio Score</div>
+            <div id="scoreDisplay" class="score-display">--</div>
+            <button id="detailsToggle" class="details-toggle">Show Reasoning</button>
+            <div id="reasoning" class="reasoning"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+
+</html>

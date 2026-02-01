@@ -1,0 +1,16 @@
+model:
+  name: "gemini-2.5-flash"
+  temperature: 0.7
+
+prompts:
+  system: "You are a financial expert specializing in portfolio analysis. Provide concise, actionable insights."
+  analysis_template: |
+    Analyze the following stock portfolio and provide an investment quality score.
+
+    {user_input}
+
+    Instructions:
+    - Evaluate diversification, risk, and growth potential.
+    - Consider the user's instructions if provided.
+    - Return ONLY a valid JSON object, no markdown, no code blocks, no extra text.
+    - Format: {{"score": <integer 1-100>, "reasoning": "<string explaining the score>"}}
